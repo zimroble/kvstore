@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - name: release
+            flags: -DCMAKE_BUILD_TYPE=Release
+          - name: asan-ubsan
+            flags: -DCMAKE_BUILD_TYPE=Debug -DKV_SANITIZE=ON
+    name: ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgtest-dev redis-tools
+      - name: Build
+        run: cmake -S . -B build ${{ matrix.flags }} && cmake --build build -j"$(nproc)"
+      - name: Unit tests
+        run: cd build && ctest --output-on-failure
+      - name: End-to-end + crash tests
+        run: python3 tests/integration_test.py build/kvstore
+
+  docker:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t kvstore .

@@ -1,0 +1,13 @@
+machine: 4 CPUs, Intel(R) Xeon(R) Processor @ 2.10GHz
+requests=1000000 clients=50 value=64B keyspace=100k
+
+kvstore                SET  pipeline=1       112829 req/s   p50=0.215ms  p99=0.615ms
+kvstore                GET  pipeline=1       105141 req/s   p50=0.231ms  p99=0.623ms
+kvstore                SET  pipeline=16      577367 req/s   p50=0.903ms  p99=2.799ms
+kvstore                GET  pipeline=16      968992 req/s   p50=0.727ms  p99=1.591ms
+kvstore+aof(everysec)  SET  pipeline=1       116523 req/s   p50=0.215ms  p99=0.703ms
+kvstore+aof(everysec)  GET  pipeline=1       102891 req/s   p50=0.239ms  p99=0.623ms
+redis-server           SET  pipeline=1       117744 req/s   p50=0.215ms  p99=0.575ms
+redis-server           GET  pipeline=1       110351 req/s   p50=0.223ms  p99=0.615ms
+redis-server           SET  pipeline=16      693963 req/s   p50=1.023ms  p99=1.799ms
+redis-server           GET  pipeline=16      837521 req/s   p50=0.831ms  p99=1.671ms
